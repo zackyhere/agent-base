@@ -1,0 +1,1403 @@
+---
+import Layout from '../layouts/Layout.astro';
+import officeAvif from '../assets/office.avif';
+import officeWebp from '../assets/office.webp';
+---
+
+<Layout title="Workspace">
+	<main class="page">
+		<!-- ────────────── CANVAS 70% ────────────── -->
+		<section class="canvas" aria-label="Canvas gambar">
+			<div class="canvas-viewport" id="canvas-viewport">
+				<picture>
+					<source srcset={officeAvif.src} type="image/avif" />
+					<source srcset={officeWebp.src} type="image/webp" />
+					<img
+						class="canvas-image"
+						id="canvas-image"
+						src={officeWebp.src}
+						alt="Canvas utama"
+						draggable="false"
+						width="2048"
+						height="2048"
+						decoding="async"
+						fetchpriority="high"
+					/>
+				</picture>
+			</div>
+
+		</section>
+
+		<!-- ────────────── CONTAINER 30% ────────────── -->
+		<section class="bottom-container" aria-label="Daftar kartu">
+			<div class="bottom-container-track">
+				{Array.from({ length: 8 }).map(() => (
+					<article class="card">
+						<div class="skeleton card-image"></div>
+						<div class="card-body">
+							<span class="skeleton line card-title"></span>
+							<span class="skeleton line card-subtitle"></span>
+						</div>
+					</article>
+				))}
+			</div>
+		</section>
+
+		<!-- ────────────── SIDEBAR (resizable) ────────────── -->
+		<aside class="sidebar" id="sidebar" aria-label="Chat">
+			<!-- ── Chat header ── -->
+			<div class="chat-header">
+				<button class="chat-sessions-btn" type="button" id="sessions-btn" aria-label="Lihat daftar session">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+				</button>
+				<div class="chat-header-info">
+					<span class="chat-room-name">Project Room</span>
+				</div>
+				<div class="chat-header-spacer"></div>
+				<div class="header-switches" role="group" aria-label="Panel switches">
+					<button class="switch-btn active" type="button" data-panel="chat" aria-label="Chat">1</button>
+					<button class="switch-btn" type="button" data-panel="files" aria-label="Files">2</button>
+					<button class="switch-btn" type="button" data-panel="search" aria-label="Search">3</button>
+				</div>
+			</div>
+
+			<!-- ── Session list overlay ── -->
+			<div class="sessions-panel" id="sessions-panel">
+				<div class="sessions-header">
+					<span class="sessions-title">Chat Sessions</span>
+					<button class="sessions-close" type="button" id="sessions-close" aria-label="Tutup">
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+					</button>
+				</div>
+				<div class="sessions-list">
+					<div class="session-item active">
+						<div class="session-avatar" style="background:#28cbb9;">P</div>
+						<div class="session-info">
+							<span class="session-name">Project Room</span>
+							<span class="session-last">user2: keren banget hasilnya!</span>
+						</div>
+					</div>
+					<div class="session-item">
+						<div class="session-avatar" style="background:#7c5bf5;">D</div>
+						<div class="session-info">
+							<span class="session-name">Design Team</span>
+							<span class="session-last">user1: mockup sudah ready</span>
+						</div>
+					</div>
+					<div class="session-item">
+						<div class="session-avatar" style="background:#f59e0b;">G</div>
+						<div class="session-info">
+							<span class="session-name">General</span>
+							<span class="session-last">user3: meeting jam 3 ya</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- ── Chat messages ── -->
+			<div class="chat-messages" id="chat-messages">
+				<!-- user1 -->
+				<div class="msg msg-other">
+					<div class="msg-avatar" style="background:#7c5bf5;">A</div>
+					<div class="msg-content">
+						<span class="msg-name" style="color:#7c5bf5;">user1</span>
+						<div class="msg-bubble">Halo semua, udah liat design barunya? 👀</div>
+						<span class="msg-time">09:14</span>
+					</div>
+				</div>
+
+				<!-- user2 -->
+				<div class="msg msg-other">
+					<div class="msg-avatar" style="background:#f59e0b;">B</div>
+					<div class="msg-content">
+						<span class="msg-name" style="color:#f59e0b;">user2</span>
+						<div class="msg-bubble">Belum nih, yang mana?</div>
+						<span class="msg-time">09:15</span>
+					</div>
+				</div>
+
+				<!-- me -->
+				<div class="msg msg-me">
+					<div class="msg-content">
+						<div class="msg-bubble">Ini gw udah push ke branch dev. Coba cek canvas-nya, udah bisa zoom & pan sekarang 🚀</div>
+						<span class="msg-time">09:16</span>
+					</div>
+				</div>
+
+				<!-- user1 -->
+				<div class="msg msg-other">
+					<div class="msg-avatar" style="background:#7c5bf5;">A</div>
+					<div class="msg-content">
+						<span class="msg-name" style="color:#7c5bf5;">user1</span>
+						<div class="msg-bubble">Wih mantap, smooth banget gesture-nya. Sidebar bisa di-resize juga ya?</div>
+						<span class="msg-time">09:18</span>
+					</div>
+				</div>
+
+				<!-- me -->
+				<div class="msg msg-me">
+					<div class="msg-content">
+						<div class="msg-bubble">Iya, drag resizer-nya aja. Auto zoom juga ngikutin 👍</div>
+						<span class="msg-time">09:19</span>
+					</div>
+				</div>
+
+				<!-- user3 -->
+				<div class="msg msg-other">
+					<div class="msg-avatar" style="background:#ef4444;">C</div>
+					<div class="msg-content">
+						<span class="msg-name" style="color:#ef4444;">user3</span>
+						<div class="msg-bubble">Keren sih ini. Bottom container buat apa btw?</div>
+						<span class="msg-time">09:21</span>
+					</div>
+				</div>
+
+				<!-- me -->
+				<div class="msg msg-me">
+					<div class="msg-content">
+						<div class="msg-bubble">Nanti itu buat nampung list assets/layer. Masih skeleton dulu sekarang ✌️</div>
+						<span class="msg-time">09:22</span>
+					</div>
+				</div>
+
+				<!-- user2 -->
+				<div class="msg msg-other">
+					<div class="msg-avatar" style="background:#f59e0b;">B</div>
+					<div class="msg-content">
+						<span class="msg-name" style="color:#f59e0b;">user2</span>
+						<div class="msg-bubble">keren banget hasilnya! gas terus 💪</div>
+						<span class="msg-time">09:24</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- ── Chat input ── -->
+			<div class="chat-input-row">
+				<textarea class="chat-input" id="chat-input" placeholder="Ketik pesan..." autocomplete="off" rows="1"></textarea>
+				<button class="chat-send-btn" type="button" id="chat-send" aria-label="Kirim pesan">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+				</button>
+			</div>
+		</aside>
+
+		<!-- ────────────── RESIZER HOLD ────────────── -->
+		<div class="resizer" id="resizer" role="separator" aria-orientation="vertical" aria-label="Geser untuk mengubah lebar sidebar" tabindex="0">
+			<div class="resizer-handle"></div>
+		</div>
+	</main>
+</Layout>
+
+<script>
+	// ──────────────────────────────────────────────
+	//  Zoom & Pan logic untuk canvas
+	// ──────────────────────────────────────────────
+	const viewport = document.getElementById('canvas-viewport')!;
+	const image = document.getElementById('canvas-image') as HTMLImageElement;
+
+	const MAX_SCALE = 8;
+
+	// Cache viewport dimensions — dibaca sekali, diupdate hanya saat ResizeObserver
+	let vw = viewport.clientWidth;
+	let vh = viewport.clientHeight;
+
+	function updateViewportDims() {
+		vw = viewport.clientWidth;
+		vh = viewport.clientHeight;
+	}
+
+	function isZoomLocked() {
+		return currentLayout === 'fit' || currentLayout === 'full';
+	}
+
+	let scale = 1;
+	let tx = 0;
+	let ty = 0;
+	let pointers = new Map<number, { x: number; y: number }>();
+	let lastPinchDist = 0;
+	let isPanning = false;
+	let isPinching = false;
+	let panStart = { x: 0, y: 0 };
+
+	// Layout mode: 'free' (1), 'fit' (2), atau 'full' (3)
+	let currentLayout: 'free' | 'fit' | 'full' = 'free';
+
+	const root = document.documentElement;
+	const resizer = document.getElementById('resizer')!;
+
+	const SB_MIN = 200;
+	const SB_MAX = 560;
+	const SB_DEFAULT = 340;
+
+	// Track sidebar width secara in-memory, hindari getComputedStyle berulang
+	let currentSBW = parseFloat(localStorage.getItem('sidebar-w') || '') || SB_DEFAULT;
+	if (currentSBW < SB_MIN || currentSBW > SB_MAX) currentSBW = SB_DEFAULT;
+
+	// Set sidebar width dari localStorage SECEPATNYA agar viewport.clientWidth akurat
+	// saat initScale() dipanggil di bawah.
+	// Matikan transition saat inisialisasi agar canvas tidak mid-transition
+	// saat initScale() membaca viewport.clientWidth.
+	document.body.classList.add('no-init-transition');
+	root.style.setProperty('--sidebar-w', `${currentSBW}px`);
+
+	// Dimensi natural gambar (ukuran asli piksel)
+	function getRenderedSize() {
+		const w = image.naturalWidth || image.clientWidth || 1;
+		const h = image.naturalHeight || image.clientHeight || 1;
+		return { w, h };
+	}
+
+	function getMinScale() {
+		const { w, h } = getRenderedSize();
+		return Math.max(vw / w, vh / h);
+	}
+
+	// Batasi posisi (tx, ty) agar seluruh viewport tetap terisi gambar (no black bars)
+	// Gambar memiliki width/height = natural size (set via syncImageSize),
+	// lalu transform scale memperbesar/mengecilkan. Range geser dihitung dari
+	// kelebihan ukuran gambar ter-scaled terhadap viewport.
+	function clampPan() {
+		const { w, h } = getRenderedSize();
+		const iw = w * scale;
+		const ih = h * scale;
+
+		// Gambar di-anchor di (0,0) dengan transform-origin: 0 0.
+		// tx/ty harus di-clamp agar gambar selalu menutupi viewport:
+		//   - Batas atas/kiri: tx/ty maksimal 0 (gambar tidak boleh bergeser ke kanan/bawah dari origin)
+		//   - Batas bawah/kanan: tx/ty minimal -(iw - vw) agar tepi kanan/bawah gambar tidak masuk viewport
+		if (iw <= vw) {
+			tx = (vw - iw) / 2;
+		} else {
+			tx = Math.min(0, Math.max(-(iw - vw), tx));
+		}
+
+		if (ih <= vh) {
+			ty = (vh - ih) / 2;
+		} else {
+			ty = Math.min(0, Math.max(-(ih - vh), ty));
+		}
+	}
+
+	function apply() {
+		clampPan();
+		image.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${scale})`;
+	}
+
+	// Set style width/height gambar ke natural size (tanpa CSS sizing)
+	function syncImageSize() {
+		const { w, h } = getRenderedSize();
+		if (w > 1 && h > 1) {
+			image.style.width = `${w}px`;
+			image.style.height = `${h}px`;
+		}
+	}
+
+	function setScale(next: number, originX?: number, originY?: number) {
+		const prev = scale;
+		const minS = getMinScale();
+		next = Math.min(MAX_SCALE, Math.max(minS, next));
+		if (next === prev) return;
+		const cx = originX ?? vw / 2;
+		const cy = originY ?? vh / 2;
+		const imgX = cx - tx;
+		const imgY = cy - ty;
+		const ratio = next / prev;
+		tx = cx - imgX * ratio;
+		ty = cy - imgY * ratio;
+		scale = next;
+		apply();
+	}
+
+	viewport.addEventListener('wheel', (e) => {
+		if (isZoomLocked()) return;
+		e.preventDefault();
+		const rect = viewport.getBoundingClientRect();
+		const x = e.clientX - rect.left;
+		const y = e.clientY - rect.top;
+		const delta = -e.deltaY * 0.0015;
+		setScale(scale * (1 + delta), x, y);
+	}, { passive: false });
+
+	viewport.addEventListener('pointerdown', (e) => {
+		if (isZoomLocked()) return;
+		viewport.setPointerCapture(e.pointerId);
+		pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+		if (pointers.size === 1) {
+			isPanning = true;
+			panStart = { x: e.clientX, y: e.clientY };
+		} else if (pointers.size === 2) {
+			isPanning = false;
+			isPinching = true;
+			const pts = [...pointers.values()];
+			lastPinchDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+		}
+	});
+
+	viewport.addEventListener('pointermove', (e) => {
+		if (isZoomLocked()) return;
+		if (!pointers.has(e.pointerId)) return;
+		pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+		if (isPinching && pointers.size >= 2) {
+			const pts = [...pointers.values()];
+			const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+			if (lastPinchDist > 0) {
+				const ratio = dist / lastPinchDist;
+				const midX = (pts[0].x + pts[1].x) / 2;
+				const midY = (pts[0].y + pts[1].y) / 2;
+				const rect = viewport.getBoundingClientRect();
+				setScale(scale * ratio, midX - rect.left, midY - rect.top);
+			}
+			lastPinchDist = dist;
+			return;
+		}
+
+		if (isPanning && pointers.size === 1) {
+			const dx = e.clientX - panStart.x;
+			const dy = e.clientY - panStart.y;
+			tx += dx;
+			ty += dy;
+			panStart = { x: e.clientX, y: e.clientY };
+			apply();
+		}
+	});
+
+	function endPointer(e: PointerEvent) {
+		pointers.delete(e.pointerId);
+		if (pointers.size < 2) { isPinching = false; lastPinchDist = 0; }
+		if (pointers.size === 0) { isPanning = false; }
+		if (pointers.size === 1) {
+			const p = [...pointers.values()][0];
+			panStart = { x: p.x, y: p.y };
+			isPanning = true;
+		}
+	}
+	viewport.addEventListener('pointerup', endPointer);
+	viewport.addEventListener('pointercancel', endPointer);
+	viewport.addEventListener('pointerleave', endPointer);
+
+	// Set skala awal: zoom langsung ke "cover" agar tidak ada black bars
+	function initScale() {
+		syncImageSize();
+		updateViewportDims();
+		const { w, h } = getRenderedSize();
+		let minS = Math.max(vw / w, vh / h);
+		scale = minS;
+		tx = (vw - w * minS) / 2;
+		ty = (vh - h * minS) / 2;
+		apply();
+	}
+
+	function safeInit() {
+		const { w, h } = getRenderedSize();
+		if (w < 2 || h < 2) {
+			requestAnimationFrame(safeInit);
+			return;
+		}
+		initScale();
+		// Inisialisasi selesai — kembalikan transition untuk interaksi normal.
+		// Gunakan double-rAF agar layout sudah flush dengan nilai sidebar final.
+		requestAnimationFrame(() => {
+			requestAnimationFrame(() => {
+				document.body.classList.remove('no-init-transition');
+			});
+		});
+	}
+
+	if (image.complete && image.naturalWidth > 0) {
+		requestAnimationFrame(safeInit);
+	} else {
+		image.addEventListener('load', () => {
+			requestAnimationFrame(safeInit);
+		}, { once: true });
+	}
+
+	let roPending = false;
+	const ro = new ResizeObserver(() => {
+		if (roPending) return;
+		roPending = true;
+		requestAnimationFrame(() => {
+			roPending = false;
+			updateViewportDims();
+			syncImageSize();
+			handleResize();
+		});
+	});
+
+	function handleResize() {
+		if (currentLayout === 'fit') {
+			// Di mode fit: gambar utuh (contain)
+			const { w: imgW, h: imgH } = getRenderedSize();
+			const canvasH = vh;
+
+			if (currentLayout === 'fit') {
+				// Mode fit: sidebar melebar hingga mepet canvas (no black bars)
+				const containScale = canvasH / imgH;
+				const renderedW = imgW * containScale;
+				let sidebarW = Math.round(window.innerWidth - renderedW);
+				sidebarW = Math.max(200, sidebarW);
+				root.style.setProperty('--sidebar-w', `${sidebarW}px`);
+			}
+
+			// Set ulang skala & posisi setelah sidebar/canvas berubah
+			requestAnimationFrame(() => {
+				updateViewportDims();
+				scale = vh / imgH;
+				const iw = imgW * scale;
+				const ih = imgH * scale;
+				tx = (vw - iw) / 2;
+				ty = (vh - ih) / 2;
+				image.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${scale})`;
+			});
+			return;
+		}
+		const minS = getMinScale();
+		const prevScale = scale;
+
+		// Selama resize maupun tidak: pertahankan zoom user,
+		// hanya naikkan ke minScale jika viewport mengecil dan
+		// scale user jatuh di bawah cover minimum (no black bars).
+		if (scale < minS) {
+			scale = minS;
+		}
+
+		// Pertahankan titik fokus kamera:
+		// Hitung titik di gambar yang sedang berada di tengah viewport,
+		// lalu setelah scale berubah, posisikan agar titik itu tetap di tengah.
+		// Titik tengah viewport dalam koordinat gambar (sebelum scale berubah)
+		const focusX = (vw / 2 - tx) / prevScale;
+		const focusY = (vh / 2 - ty) / prevScale;
+		// Posisikan ulang agar titik fokus tetap di tengah viewport
+		tx = vw / 2 - focusX * scale;
+		ty = vh / 2 - focusY * scale;
+
+		apply();
+	}
+	ro.observe(viewport);
+
+	// ──────────────────────────────────────────────
+	//  Drag-to-scroll untuk bottom container track
+	// ──────────────────────────────────────────────
+	const track = document.querySelector('.bottom-container-track') as HTMLElement | null;
+	if (track) {
+		let isDown = false;
+		let startX = 0;
+		let startScroll = 0;
+		let hasMoved = false;
+
+		track.addEventListener('pointerdown', (e) => {
+			isDown = true;
+			hasMoved = false;
+			startX = e.clientX;
+			startScroll = track.scrollLeft;
+			track.setPointerCapture(e.pointerId);
+			track.classList.add('dragging');
+		});
+
+		track.addEventListener('pointermove', (e) => {
+			if (!isDown) return;
+			const dx = e.clientX - startX;
+			if (Math.abs(dx) > 4) hasMoved = true;
+			track.scrollLeft = startScroll - dx;
+		});
+
+		function endDrag(e: PointerEvent) {
+			if (!isDown) return;
+			isDown = false;
+			track.classList.remove('dragging');
+			if (track.hasPointerCapture(e.pointerId)) track.releasePointerCapture(e.pointerId);
+		}
+		track.addEventListener('pointerup', endDrag);
+		track.addEventListener('pointercancel', endDrag);
+		track.addEventListener('pointerleave', endDrag);
+
+		// Cegah klik setelah drag
+		track.addEventListener('click', (e) => {
+			if (hasMoved) { e.preventDefault(); e.stopPropagation(); }
+		}, { capture: true });
+
+		// Wheel horizontal support (Shift + wheel)
+		track.addEventListener('wheel', (e) => {
+			if (e.shiftKey) {
+				track.scrollLeft += e.deltaY;
+				e.preventDefault();
+			}
+		}, { passive: false });
+	}
+
+	// ──────────────────────────────────────────────
+	//  Sidebar resizer
+	// ──────────────────────────────────────────────
+
+	let resizing = false;
+	let startX = 0;
+	let startW = 0;
+
+	resizer.addEventListener('pointerdown', (e) => {
+		if (currentLayout === 'fit' || currentLayout === 'full') return;
+		resizing = true;
+		startX = e.clientX;
+		startW = currentSBW;
+		resizer.setPointerCapture(e.pointerId);
+		document.body.classList.add('resizing');
+	});
+
+	resizer.addEventListener('pointermove', (e) => {
+		if (!resizing) return;
+		const delta = startX - e.clientX;
+		currentSBW = Math.min(SB_MAX, Math.max(SB_MIN, startW + delta));
+		root.style.setProperty('--sidebar-w', `${currentSBW}px`);
+	});
+
+	function endResize(e: PointerEvent) {
+		if (!resizing) return;
+		resizing = false;
+		document.body.classList.remove('resizing');
+		if (resizer.hasPointerCapture(e.pointerId)) resizer.releasePointerCapture(e.pointerId);
+		localStorage.setItem('sidebar-w', String(currentSBW));
+	}
+	resizer.addEventListener('pointerup', endResize);
+	resizer.addEventListener('pointercancel', endResize);
+
+	// keyboard: left/right arrow
+	resizer.addEventListener('keydown', (e) => {
+		if (currentLayout === 'fit' || currentLayout === 'full') return;
+		if (e.key === 'ArrowLeft') { currentSBW = Math.min(SB_MAX, currentSBW + 16); root.style.setProperty('--sidebar-w', `${currentSBW}px`); e.preventDefault(); }
+		else if (e.key === 'ArrowRight') { currentSBW = Math.max(SB_MIN, currentSBW - 16); root.style.setProperty('--sidebar-w', `${currentSBW}px`); e.preventDefault(); }
+		else if (e.key === 'Home') { currentSBW = SB_DEFAULT; root.style.setProperty('--sidebar-w', `${currentSBW}px`); e.preventDefault(); }
+		else if (e.key === 'Enter') { localStorage.setItem('sidebar-w', String(currentSBW)); }
+	});
+
+	// ──────────────────────────────────────────────
+	//  Session panel toggle
+	// ──────────────────────────────────────────────
+	const sessionsBtn = document.getElementById('sessions-btn')!;
+	const sessionsPanel = document.getElementById('sessions-panel')!;
+	const sessionsClose = document.getElementById('sessions-close')!;
+
+	sessionsBtn.addEventListener('click', () => {
+		sessionsPanel.classList.toggle('open');
+	});
+	sessionsClose.addEventListener('click', () => {
+		sessionsPanel.classList.remove('open');
+	});
+
+	// ──────────────────────────────────────────────
+	//  Switch buttons
+	// ──────────────────────────────────────────────
+	const switchBtns = document.querySelectorAll<HTMLButtonElement>('.switch-btn');
+
+	function applyLayout(layout: 'free' | 'fit' | 'full') {
+		currentLayout = layout;
+		document.body.dataset.layout = layout;
+
+		if (layout === 'fit') {
+			// Tata letak 2: gambar utuh (contain), sidebar melebar hingga mepet canvas
+			// agar tidak ada space blank hitam di canvas.
+			const { w: imgW, h: imgH } = getRenderedSize();
+			const canvasH = vh; // 70% dari 100dvh
+
+			// containScale: gambar muat penuh dalam tinggi canvas
+			const containScale = canvasH / imgH;
+			const renderedW = imgW * containScale;
+
+			// Sidebar = sisa lebar layar setelah gambar dirender (mepet ke canvas)
+			let sidebarW = Math.round(window.innerWidth - renderedW);
+			sidebarW = Math.max(200, sidebarW);
+			// JANGAN timpa currentSBW — nilai ini adalah sidebar width user untuk mode free.
+			// Di mode fit, sidebar width di-set langsung via CSS variable tanpa mengubah currentSBW.
+			root.style.setProperty('--sidebar-w', `${sidebarW}px`);
+
+			// Set ulang skala & posisi gambar setelah sidebar berubah
+			// (viewport.clientWidth sudah terupdate setelah sidebar di-set)
+			requestAnimationFrame(() => {
+				updateViewportDims();
+				// Gunakan vw/vh yang baru di-update, bukan closure value
+				const fitScale = vh / imgH;
+				scale = fitScale;
+				const iw = imgW * scale;
+				const ih = imgH * scale;
+				tx = (vw - iw) / 2;
+				ty = (vh - ih) / 2;
+				image.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${scale})`;
+			});
+		} else if (layout === 'full') {
+			// Tata letak 3: sidebar full screen, canvas & bottom container disembunyikan
+			root.style.setProperty('--sidebar-w', '0px');
+			requestAnimationFrame(() => {
+				requestAnimationFrame(() => {
+					document.body.classList.remove('no-init-transition');
+				});
+			});
+		} else {
+			// Tata letak 1: kembalikan ke mode free (zoom/pan aktif)
+			// currentSBW masih menyimpan nilai user yang asli (tidak ditimpa oleh mode fit)
+			root.style.setProperty('--sidebar-w', `${currentSBW}px`);
+			// Tunggu satu frame agar browser selesai re-render canvas & bottom-container
+			// (yang baru saja display:none di mode full/fit) sebelum initScale()
+			// membaca viewport.clientWidth.
+			requestAnimationFrame(() => {
+				initScale();
+			});
+		}
+	}
+
+	switchBtns.forEach((btn) => {
+		btn.addEventListener('click', () => {
+			switchBtns.forEach((b) => b.classList.remove('active'));
+			btn.classList.add('active');
+
+			const panel = btn.dataset.panel;
+			if (panel === 'files') {
+				applyLayout('fit');
+			} else if (panel === 'search') {
+				applyLayout('full');
+			} else {
+				applyLayout('free');
+			}
+		});
+	});
+
+	// ──────────────────────────────────────────────
+	//  Chat send (demo)
+	// ──────────────────────────────────────────────
+	const chatInput = document.getElementById('chat-input') as HTMLTextAreaElement;
+	const chatSend = document.getElementById('chat-send')!;
+	const chatMessages = document.getElementById('chat-messages')!;
+
+	// Ambil atribut data-astro-cid dari elemen yang sudah ada
+	// agar elemen baru yang dibuat via JS juga kena scoped CSS
+	const astroAttr = (() => {
+		const existing = chatMessages.querySelector('.msg');
+		if (!existing) return '';
+		for (const attr of existing.attributes) {
+			if (attr.name.startsWith('data-astro-cid')) return attr.name;
+		}
+		return '';
+	})();
+
+	function scopeEl(el: Element) {
+		if (!astroAttr) return;
+		el.setAttribute(astroAttr, '');
+		el.querySelectorAll('*').forEach((child) => child.setAttribute(astroAttr, ''));
+	}
+
+	// Auto-resize textarea
+	function autoResize() {
+		chatInput.style.height = 'auto';
+		chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
+	}
+	chatInput.addEventListener('input', autoResize);
+
+	function escapeHtml(str: string) {
+		return str
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;');
+	}
+
+	function sendMessage() {
+		const text = chatInput.value.trim();
+		if (!text) return;
+		chatInput.value = '';
+		chatInput.style.height = 'auto';
+
+		const now = new Date();
+		const time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+		// Convert newlines to <br> for bubble display
+		const html = escapeHtml(text).replace(/\n/g, '<br>');
+
+		const msg = document.createElement('div');
+		msg.className = 'msg msg-me';
+		msg.innerHTML = `
+			<div class="msg-content">
+				<div class="msg-bubble">${html}</div>
+				<span class="msg-time">${time}</span>
+			</div>
+		`;
+		scopeEl(msg);
+		chatMessages.appendChild(msg);
+		chatMessages.scrollTop = chatMessages.scrollHeight;
+	}
+
+	chatSend.addEventListener('click', sendMessage);
+	chatInput.addEventListener('keydown', (e) => {
+		if (e.key === 'Enter' && !e.shiftKey) {
+			e.preventDefault();
+			sendMessage();
+		}
+		// Shift+Enter = newline (default textarea behavior, no action needed)
+	});
+
+	// Auto-scroll ke bawah saat load
+	chatMessages.scrollTop = chatMessages.scrollHeight;
+</script>
+
+<style>
+	:global(:root) {
+		--sidebar-w: 340px;
+		--sk-a: #373941;
+		--sk-b: #50525b;
+		--accent: #28cbb9;
+	}
+
+	.page {
+		position: relative;
+		width: 100vw;
+		height: 100dvh;
+		overflow: hidden;
+	}
+
+	/* ──────────────  CANVAS 70%  ────────────── */
+	.canvas {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: calc(100vw - var(--sidebar-w));
+		height: 70%;
+		overflow: hidden;
+		background: #08090d;
+		z-index: 1;
+	}
+
+	.canvas-viewport {
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+		touch-action: none;
+		cursor: grab;
+		position: relative;
+	}
+
+	.canvas-viewport:active {
+		cursor: grabbing;
+	}
+
+	.canvas-image {
+		user-select: none;
+		-webkit-user-drag: none;
+		transform-origin: 0 0;
+		transition: none;
+		will-change: transform;
+		position: absolute;
+		top: 0;
+		left: 0;
+		pointer-events: none;
+	}
+
+	/* ──────────────  CONTAINER 30%  ────────────── */
+	.bottom-container {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: var(--sidebar-w);
+		width: auto;
+		height: 30%;
+		background: #111218;
+		border-top: 1px solid rgba(255, 255, 255, 0.08);
+		overflow: hidden;
+		z-index: 2;
+	}
+
+	.bottom-container-track {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		overflow-x: auto;
+		overflow-y: hidden;
+		height: 100%;
+		padding: 0 16px;
+		scrollbar-width: none;
+		overscroll-behavior-x: contain;
+		scroll-snap-type: x proximity;
+		touch-action: pan-x;
+		-webkit-overflow-scrolling: touch;
+		cursor: grab;
+	}
+
+	.bottom-container-track::-webkit-scrollbar {
+		display: none;
+	}
+
+	.bottom-container-track.dragging {
+		cursor: grabbing;
+		scroll-snap-type: none;
+		user-select: none;
+	}
+
+	.card {
+		flex: 0 0 auto;
+		width: 180px;
+		display: flex;
+		flex-direction: column;
+		padding: 12px;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 16px;
+		background: #191a20;
+		scroll-snap-align: start;
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+	}
+
+	.card-image {
+		width: 100%;
+		aspect-ratio: 1.6;
+		border-radius: 12px;
+		background: var(--sk-a);
+		position: relative;
+		overflow: hidden;
+	}
+
+	.card-image::after,
+	.line::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: -40%;
+		width: 120%;
+		background: linear-gradient(
+			90deg,
+			transparent 30%,
+			var(--sk-b) 45%,
+			rgba(255, 255, 255, 0.12) 50%,
+			var(--sk-b) 55%,
+			transparent 70%
+		);
+		transform: translate3d(-60%, 0, 0);
+		animation: sweep 1.6s linear infinite;
+		will-change: transform;
+	}
+
+	.card-body {
+		padding: 12px 4px 4px;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	.line {
+		position: relative;
+		overflow: hidden;
+		display: block;
+		height: 8px;
+		border-radius: 99px;
+		background: var(--sk-a);
+	}
+
+	.card-title { width: 70%; }
+	.card-subtitle { width: 45%; height: 6px; }
+
+	/* ──────────────  SIDEBAR  ────────────── */
+	.sidebar {
+		position: fixed;
+		top: 0;
+		right: 0;
+		width: var(--sidebar-w);
+		height: 100dvh;
+		background: #111218;
+		border-left: 1px solid rgba(255, 255, 255, 0.08);
+		overflow: hidden;
+		z-index: 3;
+		display: flex;
+		flex-direction: column;
+	}
+
+	/* ── Chat header ── */
+	.chat-header {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 14px 16px;
+		background: #0d0e13;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+		flex-shrink: 0;
+	}
+
+	.chat-sessions-btn {
+		width: 34px;
+		height: 34px;
+		display: grid;
+		place-items: center;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 10px;
+		background: #191a20;
+		color: #8b8e9a;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		flex-shrink: 0;
+	}
+
+	.chat-sessions-btn:hover {
+		color: #f5f7f8;
+		border-color: rgba(40, 203, 185, 0.4);
+		background: #1e1f27;
+	}
+
+	.chat-header-info {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		min-width: 0;
+	}
+
+	.chat-room-name {
+		font-size: 14px;
+		font-weight: 600;
+		color: #f5f7f8;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.chat-header-spacer {
+		flex: 1;
+	}
+
+	/* ── Switch buttons ── */
+	.header-switches {
+		display: flex;
+		gap: 2px;
+		padding: 3px;
+		border-radius: 10px;
+		background: rgba(255, 255, 255, 0.04);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		flex-shrink: 0;
+	}
+
+	.switch-btn {
+		width: 30px;
+		height: 30px;
+		display: grid;
+		place-items: center;
+		border: 1px solid transparent;
+		border-radius: 7px;
+		background: transparent;
+		color: #4a4d58;
+		font-size: 13px;
+		font-weight: 700;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.switch-btn:hover {
+		color: #c5c7cf;
+		background: rgba(255, 255, 255, 0.06);
+	}
+
+	.switch-btn.active {
+		color: #28cbb9;
+		background: rgba(40, 203, 185, 0.12);
+		border-color: rgba(40, 203, 185, 0.2);
+	}
+
+	.switch-btn:focus-visible {
+		outline: 2px solid #28cbb9;
+		outline-offset: 2px;
+	}
+
+	/* ── Session list panel ── */
+	.sessions-panel {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: #111218;
+		z-index: 10;
+		display: flex;
+		flex-direction: column;
+		transform: translateX(-100%);
+		transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.sessions-panel.open {
+		transform: translateX(0);
+	}
+
+	.sessions-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 14px 16px;
+		background: #0d0e13;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+		flex-shrink: 0;
+	}
+
+	.sessions-title {
+		font-size: 14px;
+		font-weight: 600;
+		color: #f5f7f8;
+	}
+
+	.sessions-close {
+		width: 30px;
+		height: 30px;
+		display: grid;
+		place-items: center;
+		border: none;
+		border-radius: 8px;
+		background: transparent;
+		color: #6b6e7a;
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.sessions-close:hover {
+		color: #f5f7f8;
+		background: rgba(255, 255, 255, 0.06);
+	}
+
+	.sessions-list {
+		flex: 1;
+		overflow-y: auto;
+		padding: 8px;
+	}
+
+	.session-item {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 12px;
+		border-radius: 12px;
+		cursor: pointer;
+		transition: background 0.15s ease;
+	}
+
+	.session-item:hover {
+		background: rgba(255, 255, 255, 0.04);
+	}
+
+	.session-item.active {
+		background: rgba(40, 203, 185, 0.08);
+	}
+
+	.session-avatar {
+		width: 36px;
+		height: 36px;
+		border-radius: 10px;
+		display: grid;
+		place-items: center;
+		color: #fff;
+		font-size: 14px;
+		font-weight: 700;
+		flex-shrink: 0;
+	}
+
+	.session-info {
+		display: flex;
+		flex-direction: column;
+		gap: 3px;
+		min-width: 0;
+	}
+
+	.session-name {
+		font-size: 13px;
+		font-weight: 600;
+		color: #e4e6ed;
+	}
+
+	.session-last {
+		font-size: 11px;
+		color: #4a4d58;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	/* ── Chat messages ── */
+	.chat-messages {
+		flex: 1;
+		min-height: 0;
+		overflow-y: auto;
+		padding: 16px 14px;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		scrollbar-width: thin;
+		scrollbar-color: #2a2c35 transparent;
+	}
+
+	.chat-messages::-webkit-scrollbar {
+		width: 5px;
+	}
+
+	.chat-messages::-webkit-scrollbar-thumb {
+		background: #2a2c35;
+		border-radius: 99px;
+	}
+
+	/* ── Message bubbles ── */
+	.msg {
+		display: flex;
+		gap: 8px;
+		max-width: 88%;
+		margin-bottom: 2px;
+	}
+
+	.msg-other {
+		align-self: flex-start;
+	}
+
+	.msg-me {
+		align-self: flex-end;
+		flex-direction: row-reverse;
+	}
+
+	.msg-avatar {
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		display: grid;
+		place-items: center;
+		color: #fff;
+		font-size: 11px;
+		font-weight: 700;
+		flex-shrink: 0;
+		margin-top: 18px;
+	}
+
+	.msg-content {
+		display: flex;
+		flex-direction: column;
+		gap: 3px;
+	}
+
+	.msg-name {
+		font-size: 11px;
+		font-weight: 600;
+		padding-left: 2px;
+	}
+
+	.msg-bubble {
+		padding: 10px 14px;
+		border-radius: 16px;
+		font-size: 13px;
+		line-height: 1.55;
+		word-break: break-word;
+	}
+
+	.msg-other .msg-bubble {
+		background: #1e1f27;
+		color: #e4e6ed;
+		border-bottom-left-radius: 6px;
+	}
+
+	.msg-me .msg-bubble {
+		background: #28cbb9;
+		color: #0a0b10;
+		border-bottom-right-radius: 6px;
+	}
+
+	.msg-time {
+		font-size: 10px;
+		color: #3a3d48;
+	}
+
+	.msg-me .msg-time {
+		text-align: right;
+		padding-right: 2px;
+	}
+
+	.msg-other .msg-time {
+		padding-left: 2px;
+	}
+
+	/* ── Chat input ── */
+	.chat-input-row {
+		display: flex;
+		align-items: flex-end;
+		gap: 8px;
+		padding: 12px 14px;
+		border-top: 1px solid rgba(255, 255, 255, 0.06);
+		background: #0d0e13;
+		flex-shrink: 0;
+	}
+
+	.chat-input {
+		flex: 1;
+		background: #191a20;
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: 12px;
+		padding: 10px 14px;
+		outline: none;
+		color: #e4e6ed;
+		font-size: 13px;
+		font-family: inherit;
+		line-height: 1.5;
+		resize: none;
+		overflow-y: auto;
+		max-height: 120px;
+		transition: border-color 0.2s ease;
+		scrollbar-width: thin;
+		scrollbar-color: #2a2c35 transparent;
+	}
+
+	.chat-input:focus {
+		border-color: rgba(40, 203, 185, 0.4);
+	}
+
+	.chat-input::placeholder {
+		color: #3a3d48;
+	}
+
+	.chat-send-btn {
+		width: 38px;
+		height: 38px;
+		display: grid;
+		place-items: center;
+		border: none;
+		border-radius: 12px;
+		background: #28cbb9;
+		color: #0a0b10;
+		cursor: pointer;
+		flex-shrink: 0;
+		transition: all 0.2s ease;
+	}
+
+	.chat-send-btn:hover {
+		background: #22b8a7;
+		transform: scale(1.05);
+	}
+
+	/* ──────────────  RESIZER  ────────────── */
+	.resizer {
+		position: fixed;
+		top: 0;
+		right: var(--sidebar-w);
+		width: 8px;
+		height: 100dvh;
+		transform: translateX(50%);
+		z-index: 20;
+		cursor: col-resize;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		touch-action: none;
+	}
+
+	.resizer::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		margin: auto;
+		width: 2px;
+		height: 100%;
+		background: rgba(255, 255, 255, 0.06);
+		transition: background 0.2s ease, width 0.2s ease;
+	}
+
+	.resizer:hover::before,
+	.resizer:focus-visible::before {
+		background: rgba(40, 203, 185, 0.6);
+		width: 3px;
+	}
+
+	.resizer:focus-visible {
+		outline: none;
+	}
+
+	.resizer-handle {
+		width: 4px;
+		height: 40px;
+		border-radius: 99px;
+		background: rgba(255, 255, 255, 0.12);
+		transition: background 0.2s ease, height 0.2s ease;
+		position: relative;
+		z-index: 1;
+	}
+
+	.resizer:hover .resizer-handle,
+	.resizer:focus-visible .resizer-handle {
+		background: var(--accent, #28cbb9);
+		height: 56px;
+	}
+
+	:global(body.resizing) {
+		cursor: col-resize !important;
+		user-select: none !important;
+	}
+
+	:global(body.resizing) .resizer::before {
+		background: rgba(40, 203, 185, 0.6);
+		width: 3px;
+	}
+
+	:global(body.resizing) .resizer-handle {
+		background: #28cbb9;
+		height: 56px;
+	}
+
+	.canvas,
+	.bottom-container,
+	.sidebar,
+	.resizer {
+		transition: width 0.15s ease, right 0.15s ease, left 0.15s ease;
+	}
+
+	:global(body.resizing) .canvas,
+	:global(body.resizing) .bottom-container,
+	:global(body.resizing) .sidebar,
+	:global(body.resizing) .resizer,
+	:global(body.no-init-transition) .canvas,
+	:global(body.no-init-transition) .bottom-container,
+	:global(body.no-init-transition) .sidebar,
+	:global(body.no-init-transition) .resizer {
+		transition: none !important;
+	}
+
+	/* ──────────────  LAYOUT FIT (tata letak 2)  ────────────── */
+	:global(body[data-layout='fit']) .resizer {
+		display: none;
+	}
+
+	:global(body[data-layout='fit']) .canvas-viewport {
+		cursor: default;
+	}
+
+	:global(body[data-layout='fit']) .canvas-viewport:active {
+		cursor: default;
+	}
+
+	/* ──────────────  LAYOUT FULL (tata letak 3)  ────────────── */
+	:global(body[data-layout='full']) .canvas {
+		display: none;
+	}
+
+	:global(body[data-layout='full']) .bottom-container {
+		display: none;
+	}
+
+	:global(body[data-layout='full']) .resizer {
+		display: none;
+	}
+
+	:global(body[data-layout='full']) .sidebar {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100dvh;
+		border-left: none;
+		z-index: 3;
+	}
+
+	/* ── Skeleton anim ── */
+
+	@keyframes sweep {
+		to { transform: translate3d(70%, 0, 0); }
+	}
+
+	/* ── Responsive ── */
+	@media (max-width: 700px) {
+		.card { width: 140px; padding: 10px; }
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		*, *::before, *::after {
+			animation-duration: 0.01ms !important;
+			transition-duration: 0.01ms !important;
+		}
+	}
+</style>
