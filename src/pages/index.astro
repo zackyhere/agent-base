@@ -64,10 +64,10 @@ import officeWebp from '../assets/office.webp';
 			<!-- ── Session list overlay ── -->
 			<div class="sessions-panel" id="sessions-panel">
 				<div class="sessions-header">
-					<span class="sessions-title">Chat Sessions</span>
 					<button class="sessions-close" type="button" id="sessions-close" aria-label="Tutup">
 						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
 					</button>
+					<span class="sessions-title">Chat Sessions</span>
 				</div>
 				<div class="sessions-list">
 					<div class="session-item active">
@@ -227,10 +227,24 @@ import officeWebp from '../assets/office.webp';
 	const SB_MIN = 200;
 	const SB_MAX = 560;
 	const SB_DEFAULT = 340;
+	const MOBILE_BP = 700;
+	const SNAP_THRESHOLD = 80; // di bawah ini saat drag selesai, snap ke 0 (collapsed)
+
+	function isMobile() {
+		return window.innerWidth <= MOBILE_BP;
+	}
+
+	function getMinSidebarWidth() {
+		return isMobile() ? 0 : SB_MIN;
+	}
 
 	// Track sidebar width secara in-memory, hindari getComputedStyle berulang
 	let currentSBW = parseFloat(localStorage.getItem('sidebar-w') || '') || SB_DEFAULT;
-	if (currentSBW < SB_MIN || currentSBW > SB_MAX) currentSBW = SB_DEFAULT;
+	const sbMin = getMinSidebarWidth();
+	if (currentSBW < sbMin || currentSBW > SB_MAX) currentSBW = SB_DEFAULT;
+
+	// Simpan lebar sidebar terakhir saat masih terbuka (untuk toggle dblclick)
+	let lastOpenSBW = currentSBW > 0 ? currentSBW : SB_DEFAULT;
 
 	// Set sidebar width dari localStorage SECEPATNYA agar viewport.clientWidth akurat
 	// saat initScale() dipanggil di bawah.
@@ -238,6 +252,7 @@ import officeWebp from '../assets/office.webp';
 	// saat initScale() membaca viewport.clientWidth.
 	document.body.classList.add('no-init-transition');
 	root.style.setProperty('--sidebar-w', `${currentSBW}px`);
+	document.body.classList.toggle('sb-collapsed', currentSBW === 0);
 
 	// Dimensi natural gambar (ukuran asli piksel)
 	function getRenderedSize() {
@@ -453,6 +468,14 @@ import officeWebp from '../assets/office.webp';
 		const minS = getMinScale();
 		const prevScale = scale;
 
+		// Jika berpindah dari mobile ke desktop dan sidebar = 0, kembalikan ke SB_MIN
+		const minW = getMinSidebarWidth();
+		if (currentSBW < minW) {
+			currentSBW = minW;
+			root.style.setProperty('--sidebar-w', `${currentSBW}px`);
+			document.body.classList.toggle('sb-collapsed', currentSBW === 0);
+		}
+
 		// Selama resize maupun tidak: pertahankan zoom user,
 		// hanya naikkan ke minScale jika viewport mengecil dan
 		// scale user jatuh di bawah cover minimum (no black bars).
@@ -534,6 +557,8 @@ import officeWebp from '../assets/office.webp';
 
 	resizer.addEventListener('pointerdown', (e) => {
 		if (currentLayout === 'fit' || currentLayout === 'full') return;
+		// Jika sidebar collapsed, jangan mulai drag — biarkan dblclick yang menangani
+		if (document.body.classList.contains('sb-collapsed')) return;
 		resizing = true;
 		startX = e.clientX;
 		startW = currentSBW;
@@ -544,8 +569,10 @@ import officeWebp from '../assets/office.webp';
 	resizer.addEventListener('pointermove', (e) => {
 		if (!resizing) return;
 		const delta = startX - e.clientX;
-		currentSBW = Math.min(SB_MAX, Math.max(SB_MIN, startW + delta));
+		const minW = getMinSidebarWidth();
+		currentSBW = Math.min(SB_MAX, Math.max(minW, startW + delta));
 		root.style.setProperty('--sidebar-w', `${currentSBW}px`);
+		document.body.classList.toggle('sb-collapsed', currentSBW === 0);
 	});
 
 	function endResize(e: PointerEvent) {
@@ -553,6 +580,19 @@ import officeWebp from '../assets/office.webp';
 		resizing = false;
 		document.body.classList.remove('resizing');
 		if (resizer.hasPointerCapture(e.pointerId)) resizer.releasePointerCapture(e.pointerId);
+
+		// Snap ke 0 jika di mobile dan sidebar ditarik sangat sempit
+		if (isMobile() && currentSBW > 0 && currentSBW < SNAP_THRESHOLD) {
+			// Simpan lebar sebelum snap hanya jika sebelumnya cukup lebar
+			if (startW >= SNAP_THRESHOLD) lastOpenSBW = startW;
+			currentSBW = 0;
+			root.style.setProperty('--sidebar-w', '0px');
+			document.body.classList.add('sb-collapsed');
+		}
+
+		// Update lastOpenSBW hanya jika sidebar masih terbuka & cukup lebar
+		if (currentSBW >= SNAP_THRESHOLD) lastOpenSBW = currentSBW;
+
 		localStorage.setItem('sidebar-w', String(currentSBW));
 	}
 	resizer.addEventListener('pointerup', endResize);
@@ -561,10 +601,43 @@ import officeWebp from '../assets/office.webp';
 	// keyboard: left/right arrow
 	resizer.addEventListener('keydown', (e) => {
 		if (currentLayout === 'fit' || currentLayout === 'full') return;
+		const minW = getMinSidebarWidth();
 		if (e.key === 'ArrowLeft') { currentSBW = Math.min(SB_MAX, currentSBW + 16); root.style.setProperty('--sidebar-w', `${currentSBW}px`); e.preventDefault(); }
-		else if (e.key === 'ArrowRight') { currentSBW = Math.max(SB_MIN, currentSBW - 16); root.style.setProperty('--sidebar-w', `${currentSBW}px`); e.preventDefault(); }
+		else if (e.key === 'ArrowRight') { currentSBW = Math.max(minW, currentSBW - 16); root.style.setProperty('--sidebar-w', `${currentSBW}px`); e.preventDefault(); }
 		else if (e.key === 'Home') { currentSBW = SB_DEFAULT; root.style.setProperty('--sidebar-w', `${currentSBW}px`); e.preventDefault(); }
 		else if (e.key === 'Enter') { localStorage.setItem('sidebar-w', String(currentSBW)); }
+	});
+
+	// Double-click toggle: tutup/buka sidebar (khusus mobile)
+	function toggleSidebar() {
+		if (currentLayout === 'fit' || currentLayout === 'full') return;
+		if (currentSBW === 0) {
+			// Buka kembali — pastikan minimal SB_MIN agar tidak nyaris 0
+			currentSBW = Math.max(SB_MIN, lastOpenSBW);
+			root.style.setProperty('--sidebar-w', `${currentSBW}px`);
+			document.body.classList.remove('sb-collapsed');
+			localStorage.setItem('sidebar-w', String(currentSBW));
+		} else {
+			// Tutup sidebar
+			lastOpenSBW = currentSBW;
+			currentSBW = 0;
+			root.style.setProperty('--sidebar-w', '0px');
+			document.body.classList.add('sb-collapsed');
+			localStorage.setItem('sidebar-w', '0');
+		}
+	}
+
+	resizer.addEventListener('dblclick', () => {
+		if (!isMobile()) return;
+		toggleSidebar();
+	});
+
+	// Saat collapsed, single tap juga bisa buka (lebih mudah di mobile)
+	resizer.addEventListener('click', () => {
+		if (!isMobile()) return;
+		if (document.body.classList.contains('sb-collapsed')) {
+			toggleSidebar();
+		}
 	});
 
 	// ──────────────────────────────────────────────
@@ -574,11 +647,27 @@ import officeWebp from '../assets/office.webp';
 	const sessionsPanel = document.getElementById('sessions-panel')!;
 	const sessionsClose = document.getElementById('sessions-close')!;
 
-	sessionsBtn.addEventListener('click', () => {
+	sessionsBtn.addEventListener('click', (e) => {
+		e.stopPropagation();
 		sessionsPanel.classList.toggle('open');
 	});
 	sessionsClose.addEventListener('click', () => {
 		sessionsPanel.classList.remove('open');
+	});
+
+	// Tutup sessions panel saat klik di luar panel
+	document.addEventListener('click', (e) => {
+		if (!sessionsPanel.classList.contains('open')) return;
+		if (sessionsPanel.contains(e.target as Node)) return;
+		if (sessionsBtn.contains(e.target as Node)) return;
+		sessionsPanel.classList.remove('open');
+	});
+
+	// Tutup sessions panel saat Escape
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape' && sessionsPanel.classList.contains('open')) {
+		sessionsPanel.classList.remove('open');
+		}
 	});
 
 	// ──────────────────────────────────────────────
@@ -632,6 +721,7 @@ import officeWebp from '../assets/office.webp';
 			// Tata letak 1: kembalikan ke mode free (zoom/pan aktif)
 			// currentSBW masih menyimpan nilai user yang asli (tidak ditimpa oleh mode fit)
 			root.style.setProperty('--sidebar-w', `${currentSBW}px`);
+			document.body.classList.toggle('sb-collapsed', currentSBW === 0);
 			// Tunggu satu frame agar browser selesai re-render canvas & bottom-container
 			// (yang baru saja display:none di mode full/fit) sebelum initScale()
 			// membaca viewport.clientWidth.
@@ -1001,8 +1091,8 @@ import officeWebp from '../assets/office.webp';
 		position: absolute;
 		top: 0;
 		left: 0;
-		right: 0;
 		bottom: 0;
+		width: 80%;
 		background: #111218;
 		z-index: 10;
 		display: flex;
@@ -1018,7 +1108,7 @@ import officeWebp from '../assets/office.webp';
 	.sessions-header {
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
+		gap: 12px;
 		padding: 14px 16px;
 		background: #0d0e13;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.06);
@@ -1392,6 +1482,69 @@ import officeWebp from '../assets/office.webp';
 	/* ── Responsive ── */
 	@media (max-width: 700px) {
 		.card { width: 140px; padding: 10px; }
+
+		/* Resizer lebih lebar di mobile agar mudah disentuh */
+		.resizer {
+			width: 14px;
+		}
+		.resizer-handle {
+			width: 5px;
+			height: 32px;
+		}
+
+		/* Saat collapsed di mobile, resizer menjadi tab jendolan pendek di tengah tepi kanan */
+		:global(body.sb-collapsed) .resizer {
+			right: 0 !important;
+			width: 24px !important;
+			height: 60px !important;
+			top: 50% !important;
+			transform: translateY(-50%) !important;
+			pointer-events: auto !important;
+			z-index: 50;
+			align-items: center;
+			justify-content: center;
+			border-radius: 10px 0 0 10px;
+			background: rgba(40, 203, 185, 0.2);
+			border: 1px solid rgba(40, 203, 185, 0.35);
+			border-right: none;
+			backdrop-filter: blur(8px);
+		}
+
+		:global(body.sb-collapsed) .resizer::before {
+			display: none;
+		}
+
+		:global(body.sb-collapsed) .resizer-handle {
+			width: 4px;
+			height: 28px;
+			background: var(--accent, #28cbb9);
+			border-radius: 99px;
+			box-shadow: 0 0 10px rgba(40, 203, 185, 0.5);
+		}
+	}
+
+	/* Sembunyikan sidebar saat lebar = 0 */
+	:global(body.sb-collapsed) .sidebar {
+		width: 0 !important;
+		overflow: hidden;
+		border-left: none;
+	}
+
+	:global(body.sb-collapsed) .canvas {
+		width: 100vw !important;
+	}
+
+	:global(body.sb-collapsed) .bottom-container {
+		right: 0 !important;
+	}
+
+	/* Desktop: resizer hilang saat collapsed */
+	@media (min-width: 701px) {
+		:global(body.sb-collapsed) .resizer {
+			width: 0 !important;
+			overflow: hidden;
+			pointer-events: none;
+		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
